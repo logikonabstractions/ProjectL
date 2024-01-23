@@ -1,16 +1,23 @@
-# This is a sample Python script.
+import yaml
+import os
 
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
+from game_objects import GameManager
 
+dir_path = os.path.dirname(os.path.realpath(__file__))
+file_path = os.path.join(dir_path, 'configs.yaml')
 
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
+def main():
+    configs_dict = read_yaml(file_path)
+    gm = GameManager(configs_dict)
+    print(f"Those are the configs: {configs_dict}")
+    print(f"And that's our GameManager... let's run it! ")
+    gm.run()
+    
+def read_yaml(file_path):
+    with open(file_path, 'r') as file:
+        # Parse YAML content
+        data = yaml.safe_load(file)
+        return data
 
-
-# Press the green button in the gutter to run the script.
-if __name__ == '__main__':
-    print_hi('PyCharm')
-
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+if __name__ == "__main__":
+    main()

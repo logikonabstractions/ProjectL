@@ -1,0 +1,21 @@
+# Sample YAML file
+
+players:
+  - name: Franciiiis
+    age: 39
+  - name: Kiiiim
+    age: 38
+
+items:
+  - name: Item1
+    price: 19.99
+  - name: Item2
+    price: 29.99
+  - name: Item3
+    price: 39.99
+
+config:
+  enabled: true
+  features:
+    feature1: active
+    feature2: inactive

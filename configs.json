@@ -1,0 +1,24 @@
+{
+  "person": {
+    "name": "John Doe",
+    "age": 30,
+    "address": {
+      "street": "123 Main St",
+      "city": "Anytown",
+      "zip": "12345"
+    },
+    "hobbies": ["Reading", "Hiking", "Coding"]
+  },
+  "items": [
+    { "name": "Item1", "price": 19.99 },
+    { "name": "Item2", "price": 29.99 },
+    { "name": "Item3", "price": 39.99 }
+  ],
+  "config": {
+    "enabled": true,
+    "features": {
+      "feature1": "active",
+      "feature2": "inactive"
+    }
+  }
+}

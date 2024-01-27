@@ -1,3 +1,4 @@
+import numpy as np
 import yaml
 import os
 
@@ -21,3 +22,9 @@ def read_yaml(file_path):
 
 if __name__ == "__main__":
     main()
+
+    array_2d = np.zeros((6, 6), dtype=int)
+
+    # Print the array with the [[1, 2, ...]] notation
+    for row in array_2d:
+        print(list(row))

@@ -5,7 +5,8 @@ import os
 from game_objects import GameManager
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
-file_path = os.path.join(dir_path, 'configs.yaml')
+parent_dir = os.path.dirname(dir_path)                  # since configs are in project root
+file_path = os.path.join(parent_dir, 'configs.yaml')
 
 def main():
     configs_dict = read_yaml(file_path)
@@ -22,9 +23,3 @@ def read_yaml(file_path):
 
 if __name__ == "__main__":
     main()
-
-    # array_2d = np.zeros((6, 6), dtype=int)
-    # 
-    # # Print the array with the [[1, 2, ...]] notation
-    # for row in array_2d:
-    #     print(list(row))

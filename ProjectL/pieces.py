@@ -1,7 +1,5 @@
 import numpy as np
-
-from utils import plot_image
-
+from .utils import plot_image
 
 class Piece:
     """describes a Piece that a Player can place on a Card"""
@@ -95,9 +93,11 @@ class Piece:
             plot_image(arr, f"Configuration {idx}/{len(self.configurations_array)}")
 
     def validate_cube(self):
-        summed_matrix = np.sum(self.configurations_array, axis=0)        
+        summed_matrix = np.sum(self.cube, axis=0)        
         plot_image(summed_matrix, self.name)
-
+        
+    def __repr__(self):
+        return self.name
 
 class PieceSquare(Piece):
     """ a subclass for easy access to a basic piece, e.g. a simpe square"""
@@ -111,3 +111,9 @@ class PieceSquare(Piece):
         # self.configurations_array = []
         # self.cube = None
         # self.generate_cube()
+
+
+class Card:
+
+    def __init__(self):
+        self.layout = np.zeros(shape=(5, 5), dtype=int)

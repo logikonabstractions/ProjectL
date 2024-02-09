@@ -1,7 +1,5 @@
 import string
-import numpy as np
-
-from pieces import Piece
+import random
 from actions import *
 
 class GameState:
@@ -22,7 +20,7 @@ class GameState:
 
 class GameManager:  
     """ the main game engine that runs the game. """
-    def __init__(self, configs_dict):
+    def __init__(self, configs_dict):  
         self.configs = configs_dict
         # self.configs_actions = configs_dict["game_parameters"]["actions"]
         self.configs_pieces = configs_dict["pieces"]
@@ -109,22 +107,29 @@ class Player:
             print(f"Action: {action}")
             if action.is_action_valid():
                 result = action.perform_action()
+            print(f"{self}")
             
             
         print(f"{self.name} has no action left.")
+        print(f"{self}")
 
     def choose_action(self):
         """ decides what the player does this turn"""
-        action_selected = random.choice(self.actions)(pieces=self.pieces)
+        action_selected = random.choice(self.actions)(pieces=self.pieces, cards=self.cards)
         self.actions_left -= 1        
         return action_selected
     
     def get_actions(self):
+        
         actions = [TakePiece, PlacePiece, UpgradePiece,  TakeCard, Master]
+        # actions = [PlacePiece, UpgradePiece,  TakeCard]
+        
+        
         return actions
 
     def __repr__(self):
-        return self.name
+        return f"Name: {self.name} " \
+               f"pieces: {self.pieces} cards: {self.cards}"
 
     def generate_random_name(self, length=5):
         """ just for fun - generates random names to players if none assigned """
@@ -135,8 +140,3 @@ class Player:
     def get_initial_pieces(self):
         return [PieceSquare()]
 
-
-class Card:
-    
-    def __init__(self):
-        self.layout = np.zeros(shape=(5,5), dtype=int)

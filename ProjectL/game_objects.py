@@ -24,6 +24,7 @@ class GameManager:
         self.configs = configs_dict
         # self.configs_actions = configs_dict["game_parameters"]["actions"]
         self.configs_pieces = configs_dict["pieces"]
+        self.configs_cards = configs_dict["cards"]
         self.game_state = GameState(current_turn_number=1, max_turns=configs_dict["game_parameters"]["max_turns"])
         
         # game parameters - extraction for easier access
@@ -31,6 +32,7 @@ class GameManager:
         # self.max_turns = configs_dict["game_parameters"]["max_turns"]
         self.pieces = []
         self.actions = [TakePiece, PlacePiece, UpgradePiece, TakeCard, Master]
+        self.cards = []
         
         # players        
         self.player_1 = Player(name=configs_dict["players"][0]["name"])
@@ -51,6 +53,9 @@ class GameManager:
         """
         for piece_confs in self.configs_pieces:
             self.pieces.append(Piece(configs=piece_confs))
+            
+        for card_confs in self.configs_cards:
+            self.cards.append(Card(configs=card_confs))
 
     def run(self):
         """ loop that runs the game """

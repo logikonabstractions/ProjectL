@@ -113,7 +113,3 @@ class PieceSquare(Piece):
         # self.generate_cube()
 
 
-class Card:
-
-    def __init__(self):
-        self.layout = np.zeros(shape=(5, 5), dtype=int)

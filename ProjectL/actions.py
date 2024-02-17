@@ -1,3 +1,4 @@
+from ProjectL.card import Card
 from ProjectL.pieces import *
 
 class Action:

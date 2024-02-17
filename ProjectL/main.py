@@ -1,8 +1,9 @@
-import numpy as np
 import yaml
 import os
-
 from game_objects import GameManager
+
+# TODO: configure as a default general configs the maximal dimensions of the card
+
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
 parent_dir = os.path.dirname(dir_path)                  # since configs are in project root

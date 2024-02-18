@@ -94,7 +94,7 @@ class Piece:
 
     def validate_cube(self):
         summed_matrix = np.sum(self.cube, axis=0)        
-        plot_image(summed_matrix, self.name)
+        # plot_image(summed_matrix, self.name)
         
     def __repr__(self):
         return self.name

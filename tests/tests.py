@@ -53,6 +53,48 @@ class TestPieces(unittest.TestCase):
         summed_matrix = np.sum(piece.cube, axis=0)
         self.assertTrue(np.array_equal(self.solutions["line_3"], summed_matrix))
 
+class TestPiecePlacement(unittest.TestCase):
+    """ tests placing pieces on cards """
+
+    def setUp(self):
+        """Initialize before every test."""
+        file_path = os.path.dirname(os.path.realpath(__file__))
+        file_path = os.path.join(file_path, 'configs_tests.yaml')
+        with open(file_path, 'r') as file:
+            self.configs = yaml.safe_load(file)
+            
+    def test_valid_placement_1(self):
+        """ test placing a simple piece on a card. valid placement """
+        card = Card(self.configs["cards"][0])
+        piece = Piece(self.get_piececonfs_from_name(name="corner_3"))
+        action = PlacePiece(piece=piece, card=card)
+        result = action.perform_action(piece.cube[2])
+        assert result
+                
+               
+    def test_valid_placement_2(self):
+        """ test placing a simple piece on a card. Stuff is already on the card and we place someting valid on it """
+        card = Card(self.configs["cards"][0])
+        piece = Piece(self.get_piececonfs_from_name(name="corner_3"))
+        piece_square = PieceSquare()
+        action = PlacePiece(piece=piece_square, card=card)
+        result_1 = action.perform_action(piece_square.cube[5])
+        assert result_1
+        
+        action2 = PlacePiece(piece=piece, card=card)
+        result_2 = action2.perform_action(piece.cube[2])
+        assert result_2           
+        
+        
+        
+    def get_piececonfs_from_name(self,name):
+        """ returns a piece's configs from the configs based on the piece name """
+        p = next((d for d in self.configs["pieces"] if d.get('name') == name), None)
+        if p:
+            return p
+        else:
+            raise Exception("invalid piece name from configs - check the name of the pieces defined in config file")
+        
 
 if __name__ == '__main__':
     unittest.main()

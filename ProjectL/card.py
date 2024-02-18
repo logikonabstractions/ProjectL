@@ -1,8 +1,6 @@
 import numpy as np
 from ProjectL.pieces import PieceSquare
 
-
-
 class Reward:
     """
         Describes what we get for finishing a card. Points and/or a piece
@@ -18,36 +16,45 @@ class Card:
         reward: the object that describes what piece / points we get for completing the card 
         mask: a bool numpy array that describes the playable structure of that card within the maximal matrix
     """
-
-    # def __init__(self, layout = np.zeros(shape=(5, 5), dtype=int), mask= None, reward = Reward()):
     def __init__(self, configs = None):
         if configs:
             self.layout = np.zeros(shape=(5, 5), dtype=int)
-            self.mask = configs["mask"]
+            self.mask = np.array(configs["mask"])
             self.reward = Reward(points=configs["reward"]["points"], piece=configs["reward"]["piece"])
         else:
             self.layout = np.zeros(shape=(5, 5), dtype=int)
-            self.mask = None
+            self.mask = np.array([[False,False,True,True,False,], [True,True,True,True,True], [False,False,True,True,False], [False,False,False,False,False], [False,False,False,False,False], ]
+)
             self.reward = Reward()
         
-    def place_piece(self, piece, configuration):
-        #TODO: determine how the placement at the position will be described. Ideas: 
-        
+    def place_piece(self, configuration):        
         """ 
             places the provided piece on the card at a given position. returns T/F for success
             piece: a Piece object to be placed on the current card
             configuration: a description of where on the card to place the piece
         """
         
-        return False
+        if self.placement_valid(configuration):
+            self.layout += configuration            # update the layout
+            return True
+        else:
+            return False    
     
-    
-    def placement_valid(self, piece, configuration):
+    def placement_valid(self, configuration):
         """ checks if the placement of the piece on this card is valid. conditions: 
             - no position on self.layout > 1 after self.layout += configuration
             - no bit of configuration falls on a region where the mask is false
         
         """
+        # check no bit of piece outside the mask
+        result = self.layout + configuration
+        out_sum = np.sum(result[~self.mask])     # should sum to zero
+        
+        # check that no bit of piece added to an already occupied piece
+        double_occupation = np.any(result > 1)
+        
+        return out_sum == 0 and not double_occupation
+        
     
 
 

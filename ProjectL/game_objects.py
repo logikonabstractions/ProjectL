@@ -31,12 +31,13 @@ class GameManager:
         # self.current_turn_number = 1
         # self.max_turns = configs_dict["game_parameters"]["max_turns"]
         self.pieces = []
-        self.actions = [TakePiece, PlacePiece, UpgradePiece, TakeCard, Master]
+        # self.actions = [TakePiece, PlacePiece, UpgradePiece, TakeCard, Master]
+        self.actions = [TakePiece, PlacePiece, TakeCard]
         self.cards = []
         
         # players        
-        self.player_1 = Player(name=configs_dict["players"][0]["name"])
-        self.player_2 = Player(name=configs_dict["players"][1]["name"])
+        self.player_1 = Player(name=configs_dict["players"][0]["name"], actions=self.actions)
+        self.player_2 = Player(name=configs_dict["players"][1]["name"], actions=self.actions)
         
         # game init
         self.game_init()
@@ -70,7 +71,12 @@ class GameManager:
             self.player_1.play_turn()
             self.player_2.play_turn()
 
-            # update turn number
+            # update turn number, but for debug check the state of the game
+            for card in self.player_1.cards:
+                plot_image(card.layout, f"{self.player_1.name} card at turn {self.current_turn_number}")
+                
+            for card in self.player_2.cards:
+                plot_image(card.layout, f"{self.player_2.name} card at turn {self.current_turn_number}")
             self.game_state.next_turn()
         
         
@@ -110,11 +116,16 @@ class Player:
             print(f"{self.name} chooses and action...")
             action = self.choose_action()
             print(f"Action: {action}")
-            if action.is_action_valid():
-                result = action.perform_action()
+            valid_action = False
+            while not valid_action:             # ensure we choose a valid action for that part of a turn
+                if action.is_action_valid():
+                    valid_action = True
+                    result = action.perform_action()
+                else:
+                    print(f"Action not valid - choosing another... {action}")
+                    action = self.choose_action()
+                    valid_action = action.is_action_valid()
             print(f"{self}")
-            
-            
         print(f"{self.name} has no action left.")
         print(f"{self}")
 

@@ -1,0 +1,48 @@
+game_parameters:
+  max_turns: 2
+  actions:
+    - TakePiece
+    - PlacePiece
+    - TakeCard
+
+players:
+  - name: TestPlayer1
+  - name: TestPlayer2
+
+pieces:
+  - name: square_1
+    level: 1
+    shape:
+      - [1, 0, 0, 0, 0]
+      - [0, 0, 0, 0, 0]
+      - [0, 0, 0, 0, 0]
+      - [0, 0, 0, 0, 0]
+      - [0, 0, 0, 0, 0]
+  - name: L_shape_2
+    level: 2
+    shape:
+      - [1, 0, 0, 0, 0]
+      - [1, 0, 0, 0, 0]
+      - [1, 1, 0, 0, 0]
+      - [0, 0, 0, 0, 0]
+      - [0, 0, 0, 0, 0]
+
+cards:
+  - mask:
+      - [false, false, true, true, false]
+      - [true, true, true, true, true]
+      - [false, false, true, true, false]
+      - [false, false, false, false, false]
+      - [false, false, false, false, false]
+    reward:
+      points: 1
+      piece: null
+  - mask:
+      - [true, true, true, false, false]
+      - [false, true, true, false, false]
+      - [false, false, false, false, false]
+      - [false, false, false, false, false]
+      - [false, false, false, false, false]
+    reward:
+      points: 2
+      piece: null

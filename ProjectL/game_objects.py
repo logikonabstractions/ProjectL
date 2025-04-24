@@ -1,7 +1,7 @@
 import string
 import random
-from actions import *
-
+# from actions import *
+from ProjectL.actions import *
 class GameState:
     """ encapsulates the current state of a game """
     def __init__(self, current_turn_number = 1, max_turns=2):

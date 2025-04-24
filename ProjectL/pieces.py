@@ -49,7 +49,7 @@ class Piece:
             self.configurations_array = configurations_arrays
         # self.plot_configurations()
         self.cube = np.stack(self.configurations_array, axis=0)
-        self.validate_cube()
+        # self.validate_cube()
 
     def processe_arrays(self, unprocessed_arrays):
         new_rolled_arrays = []

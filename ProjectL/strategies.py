@@ -49,19 +49,19 @@ class RandomStrat(Strategy):
     def play_turn(self):
         self.actions_left = 3
         while self.actions_left > 0:
-            print(f"{self.name} chooses and action...")
+            # print(f"{self.name} chooses and action...")
             action = self.choose_action()
-            print(f"Action: {action}")
+            # print(f"Action: {action}")
             valid_action = False
             while not valid_action:             # ensure we choose a valid action for that part of a turn
                 if action.is_action_valid():
                     valid_action = True
                     result = action.perform_action()
                 else:
-                    print(f"Action not valid - choosing another... {action}")
+                    # print(f"Action not valid - choosing another... {action}")
                     action = self.choose_action()
                     valid_action = action.is_action_valid()
-            print(f"{self}")
+            # print(f"{self}")
         print(f"{self.name} has no action left.")
         print(f"{self}")
 

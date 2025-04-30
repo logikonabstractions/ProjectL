@@ -77,11 +77,14 @@ class GameManager:
 
             # update turn number, but for debug check the state of the game
             if self.current_turn_number%10 == 0:
-                for card in self.player_1.cards:
-                    plot_image(card.layout, f"{self.player_1.name} card at turn {self.current_turn_number}")
+                print(f"{self.player_1} has {len(self.player_1.full_cards)} full cards and {len(self.player_1.cards)} cards")
+                # for card in self.player_1.cards:
+                #     plot_image(card.layout, f"{self.player_1.name} card at turn {self.current_turn_number}")
+                # for fullcard in self.player_1.full_cards:
+                #     plot_image(fullcard.layout, f"{self.player_1.name} fullcard at turn {self.current_turn_number}")
 
-                for card in self.player_2.cards:
-                    plot_image(card.layout, f"{self.player_2.name} card at turn {self.current_turn_number}")
+                # for card in self.player_2.cards:
+                #     plot_image(card.layout, f"{self.player_2.name} card at turn {self.current_turn_number}")
             self.game_state.next_turn()
         
         

@@ -1,6 +1,6 @@
 # Sample YAML file
 game_parameters:
-  max_turns: 40
+  max_turns: 60
 #  actions:
 #    - "Take a piece"
 #    - "Upgrade a piece"

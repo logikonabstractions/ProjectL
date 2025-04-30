@@ -129,7 +129,7 @@ class TakeCard(Action):
             :return: True
         """
     
-        #TODO: DEBUG    
+        #TODO: check this
         if len(self.cards) >= 1:
             return False
     

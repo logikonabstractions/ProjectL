@@ -2,6 +2,9 @@ import string
 import random
 # from actions import *
 from ProjectL.actions import *
+from ProjectL.strategies import *
+
+
 class GameState:
     """ encapsulates the current state of a game """
     def __init__(self, current_turn_number = 1, max_turns=2):
@@ -35,8 +38,9 @@ class GameManager:
         self.actions = [TakePiece, PlacePiece, TakeCard]
         self.cards = []
         
-        # players        
+        # players        TODO: ugly, refactor & makes a more robust initialization
         self.player_1 = Player(name=configs_dict["players"][0]["name"], actions=self.actions)
+        self.player_1.set_strategy(BasicStrat(player=None))
         self.player_2 = Player(name=configs_dict["players"][1]["name"], actions=self.actions)
         
         # game init
@@ -72,11 +76,12 @@ class GameManager:
             self.player_2.play_turn()
 
             # update turn number, but for debug check the state of the game
-            for card in self.player_1.cards:
-                plot_image(card.layout, f"{self.player_1.name} card at turn {self.current_turn_number}")
-                
-            for card in self.player_2.cards:
-                plot_image(card.layout, f"{self.player_2.name} card at turn {self.current_turn_number}")
+            if self.current_turn_number%10 == 0:
+                for card in self.player_1.cards:
+                    plot_image(card.layout, f"{self.player_1.name} card at turn {self.current_turn_number}")
+
+                for card in self.player_2.cards:
+                    plot_image(card.layout, f"{self.player_2.name} card at turn {self.current_turn_number}")
             self.game_state.next_turn()
         
         
@@ -95,9 +100,10 @@ class GameManager:
         return self.configs["game_parameters"]["max_turns"]
 
 
+
 class Player:
     """ a class that describes a player """
-    def __init__(self, name=None, cards =None, pieces = None, actions = None, **kwargs):
+    def __init__(self, name=None, cards =None, pieces = None, actions = None, strategy=None, **kwargs):
         
         # attri. that defines the Player itself
         self.name = name if name is not None else self.generate_random_name()
@@ -105,43 +111,17 @@ class Player:
         
         # list of objects, game stuff
         self.cards = cards if cards else []
+        self.full_cards = []
         self.pieces = pieces if pieces else self.get_initial_pieces()
-        self.actions = actions if actions else self.get_actions()
-        self.kwargs = kwargs        
+        # self.actions = actions if actions else self.get_actions()
+        self.kwargs = kwargs
+
+        self.strategy = strategy if strategy else RandomStrat(player=self)
 
     def play_turn(self):
-        """  """
-        self.actions_left = 3
-        while self.actions_left > 0:
-            print(f"{self.name} chooses and action...")
-            action = self.choose_action()
-            print(f"Action: {action}")
-            valid_action = False
-            while not valid_action:             # ensure we choose a valid action for that part of a turn
-                if action.is_action_valid():
-                    valid_action = True
-                    result = action.perform_action()
-                else:
-                    print(f"Action not valid - choosing another... {action}")
-                    action = self.choose_action()
-                    valid_action = action.is_action_valid()
-            print(f"{self}")
-        print(f"{self.name} has no action left.")
-        print(f"{self}")
+        """  delegates the playing to the strategy """
+        return self.strategy.play_turn()
 
-    def choose_action(self):
-        """ decides what the player does this turn"""
-        action_selected = random.choice(self.actions)(pieces=self.pieces, cards=self.cards)
-        self.actions_left -= 1        
-        return action_selected
-    
-    def get_actions(self):
-        
-        actions = [TakePiece, PlacePiece, UpgradePiece,  TakeCard, Master]
-        # actions = [PlacePiece, UpgradePiece,  TakeCard]
-        
-        
-        return actions
 
     def __repr__(self):
         return f"Name: {self.name} " \
@@ -155,4 +135,8 @@ class Player:
 
     def get_initial_pieces(self):
         return [PieceSquare()]
+
+    def set_strategy(self, strategy):
+        self.strategy = strategy
+        self.strategy.player = self
 

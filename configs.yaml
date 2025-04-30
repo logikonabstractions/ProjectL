@@ -1,6 +1,6 @@
 # Sample YAML file
 game_parameters:
-  max_turns: 5
+  max_turns: 40
 #  actions:
 #    - "Take a piece"
 #    - "Upgrade a piece"
@@ -36,7 +36,7 @@ cards:
   - reward:
       points: 1
       piece: null
-    mask: [[false,false,true,true,false,], [true,true,true,true,true], [false,false,true,true,false], [false,false,false,false,false], [false,false,false,false,false], ]
+    mask: [[false,false,true,true,false,], [false,false,true,true,false], [false,false,true,true,false], [false,false,false,false,false], [false,false,false,false,false], ]
 players:
   - name: Franciiiis
     age: 39

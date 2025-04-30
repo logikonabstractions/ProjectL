@@ -43,7 +43,7 @@ class TakePiece(Action):
         """ selects a possible piece and returns it
         """
         
-        # choose a piece
+        # choose a piece, for now only Square pieces
         piece = PieceSquare()
         self.pieces.append(piece)
 
@@ -73,8 +73,8 @@ class PlacePiece(Action):
             config_no = random.randint(0,self.piece.cube.shape[0]-1)
             configuration = self.piece.cube[config_no,:,:]
         if self.is_action_valid():
-            # TODO: update self.card with new piece placement
-            return self.card.place_piece(configuration)
+            result = self.card.place_piece(configuration)
+            return result
         else:
             return False
     

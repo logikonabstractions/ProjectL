@@ -23,10 +23,11 @@ class Card:
             self.reward = Reward(points=configs["reward"]["points"], piece=configs["reward"]["piece"])
         else:
             self.layout = np.zeros(shape=(5, 5), dtype=int)
-            self.mask = np.array([[False,False,True,True,False,], [True,True,True,True,True], [False,False,True,True,False], [False,False,False,False,False], [False,False,False,False,False], ]
-)
+            self.mask = np.array([[False,False,True,True,False,], [False,False,True,True,False], [False,False,True,True,False], [False,False,False,False,False], [False,False,False,False,False], ])
             self.reward = Reward()
-        
+        self.is_full = False
+
+
     def place_piece(self, configuration):        
         """ 
             places the provided piece on the card at a given position. returns T/F for success
@@ -36,6 +37,8 @@ class Card:
         
         if self.placement_valid(configuration):
             self.layout += configuration            # update the layout
+            if np.all((self.layout == 1) == self.mask):
+                self.is_full = True
             return True
         else:
             return False    

@@ -4,7 +4,7 @@ from ProjectL.actions import *
 
 class Strategy:
     """ making it possible to either implement fixed sequences of actions, or make decisions that
-        fa0vor some directions etc... Use by the Player class
+        favor some directions etc... Use by the Player class
     """
     def __init__(self, player, actions_sequence=None, action_list=None):
         self.player = player                # need a ref to player or player state in order to make in-game decisions

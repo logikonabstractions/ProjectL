@@ -12,39 +12,6 @@ class TestGameIntegration(unittest.TestCase):
         with open("tests/test_configs.yaml", 'r') as file:
             self.test_config = yaml.safe_load(file)
 
-        # self.test_config = {
-        #     'game_parameters': {
-        #         'max_turns': 10  # Smaller number for testing
-        #     },
-        #     'pieces': [
-        #         {
-        #             'name': 'square_1',
-        #             'level': 1,
-        #             'shape': [[1, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0]]
-        #         },
-        #         {
-        #             'name': 'line_2',
-        #             'level': 2,
-        #             'shape': [[1, 0, 0, 0, 0], [1, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0]]
-        #         }
-        #     ],
-        #     'cards': [
-        #         {
-        #             'reward': {
-        #                 'points': 1,
-        #                 'piece': None
-        #             },
-        #             'mask': [[False,False,True,True,False], [False,False,True,True,False],
-        #                     [False,False,True,True,False], [False,False,False,False,False],
-        #                     [False,False,False,False,False]]
-        #         }
-        #     ],
-        #     'players': [
-        #         {'name': 'TestPlayer1', 'age': 30},
-        #         {'name': 'TestPlayer2', 'age': 25}
-        #     ]
-        # }
-
     def test_full_game_flow(self):
         """Test a complete game flow from start to finish"""
         # Initialize game

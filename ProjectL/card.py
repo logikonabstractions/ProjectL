@@ -44,16 +44,16 @@ class Card:
             return False    
     
     def placement_valid(self, configuration):
-        """ checks if the placement of the piece on this card is valid. conditions: 
+        """ Conditions for a valid placement:
             - no position on self.layout > 1 after self.layout += configuration
             - no bit of configuration falls on a region where the mask is false
         
         """
-        # check no bit of piece outside the mask
+        # Validate that no portion of the configuration lands on masked position
         result = self.layout + configuration
         out_sum = np.sum(result[~self.mask])     # should sum to zero
         
-        # check that no bit of piece added to an already occupied piece
+        # Cannot place on occupied section
         double_occupation = np.any(result > 1)
         
         return out_sum == 0 and not double_occupation

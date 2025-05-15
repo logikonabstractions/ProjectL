@@ -8,6 +8,7 @@ class Strategy:
     Allows for fixed sequences of actions or dynamic decision-making.
     Used by the Player class.
     """
+
     def __init__(self, player, actions_sequence=None, action_list=None):
         self.player = player
         self.action_sequence = actions_sequence if actions_sequence else ()
@@ -17,24 +18,31 @@ class Strategy:
     def play_turn(self):
         raise NotImplemented
 
+    # Properties to access player attributes directly from strategy
     @property
     def pieces(self):
         return self.player.pieces
+
     @property
     def cards(self):
         return self.player.cards
+
     @cards.setter
     def cards(self, value):
         self.player.cards = value
+
     @property
     def full_cards(self):
         return self.player.full_cards
+
     @full_cards.setter
     def full_cards(self, value):
         self.player.full_cards = value
+
     @property
     def name(self):
         return self.player.name
+
 
 class RandomStrat(Strategy):
     """Strategy that chooses actions randomly."""
@@ -106,14 +114,13 @@ class BasicStrat(Strategy):
             return False
 
         # Try to place a piece on the first available card
-        piece = self.pieces.pop()
+        piece = self.pieces[-1]  # Look at the last piece without removing it yet
         action = PlacePiece(piece, self.cards[0], pieces=self.pieces)
 
         if self._execute_action(action):
+            self.pieces.pop()  # Remove the piece only after successful placement
             return True
-        else:
-            self.pieces.append(piece)       # put it back in the pack since the action failed
-            return False
+        return False
 
     def _determine_best_action(self):
         """Determine the best action based on current game state.
@@ -149,12 +156,11 @@ class BasicStrat(Strategy):
         while self.actions_left > 0 and actions_attempted < max_attempts:
             actions_attempted += 1
 
-            # TODO: THIS IS USELESS SINCE DETERMINE_BEST_ACTION() SHOULD, WELL, DETERMINE THE BEST ACTION. NO NEED TO ESTABLISH THAT BEST ACTION HERE
-            # # Special case: try to place pieces first
-            # if self.cards and self.pieces:
-            #     if self._try_place_piece():
-            #         self._move_full_cards()  # Check for completed cards after placement
-            #         continue
+            # Special case: try to place pieces first
+            if self.cards and self.pieces:
+                if self._try_place_piece():
+                    self._move_full_cards()  # Check for completed cards after placement
+                    continue
 
             # Get the best action based on current state
             action = self._determine_best_action()

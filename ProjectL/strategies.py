@@ -149,13 +149,6 @@ class BasicStrat(Strategy):
         while self.actions_left > 0 and actions_attempted < max_attempts:
             actions_attempted += 1
 
-            # TODO: THIS IS USELESS SINCE DETERMINE_BEST_ACTION() SHOULD, WELL, DETERMINE THE BEST ACTION. NO NEED TO ESTABLISH THAT BEST ACTION HERE
-            # # Special case: try to place pieces first
-            # if self.cards and self.pieces:
-            #     if self._try_place_piece():
-            #         self._move_full_cards()  # Check for completed cards after placement
-            #         continue
-
             # Get the best action based on current state
             action = self._determine_best_action()
 

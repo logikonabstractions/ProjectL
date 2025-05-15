@@ -12,7 +12,7 @@ class GameState:
         self.max_turns = max_turns
         
     def next_turn(self):
-        """ updates whatever needs updating in the state so that we can move on to next turn """
+        """ """
         self.current_turn_number += 1
         
     def is_game_running(self):    
@@ -25,16 +25,12 @@ class GameManager:
     """ the main game engine that runs the game. """
     def __init__(self, configs_dict):  
         self.configs = configs_dict
-        # self.configs_actions = configs_dict["game_parameters"]["actions"]
         self.configs_pieces = configs_dict["pieces"]
         self.configs_cards = configs_dict["cards"]
         self.game_state = GameState(current_turn_number=1, max_turns=configs_dict["game_parameters"]["max_turns"])
         
-        # game parameters - extraction for easier access
-        # self.current_turn_number = 1
-        # self.max_turns = configs_dict["game_parameters"]["max_turns"]
+
         self.pieces = []
-        # self.actions = [TakePiece, PlacePiece, UpgradePiece, TakeCard, Master]
         self.actions = [TakePiece, PlacePiece, TakeCard]
         self.cards = []
         
@@ -43,18 +39,15 @@ class GameManager:
         self.player_1.set_strategy(BasicStrat(player=None))
         self.player_2 = Player(name=configs_dict["players"][1]["name"], actions=self.actions)
         
-        # game init
         self.game_init()
 
     def game_init(self):
-        """ instantiates the pieces, cards, etc... any setup steps required for the game .
-            mostly based on configs 
+        """ setup for the beginning of the game
         """
         self.instantiate_pieces()
 
     def instantiate_pieces(self):
-        """ instantiates all the pieces: loads from configs, converts to numpy arrays
-            creates the objects, and plots them (For debug at least)
+        """
         """
         for piece_confs in self.configs_pieces:
             self.pieces.append(Piece(configs=piece_confs))
@@ -78,13 +71,6 @@ class GameManager:
             # update turn number, but for debug check the state of the game
             if self.current_turn_number%10 == 0:
                 print(f"{self.player_1} has {len(self.player_1.full_cards)} full cards and {len(self.player_1.cards)} cards")
-                # for card in self.player_1.cards:
-                #     plot_image(card.layout, f"{self.player_1.name} card at turn {self.current_turn_number}")
-                # for fullcard in self.player_1.full_cards:
-                #     plot_image(fullcard.layout, f"{self.player_1.name} fullcard at turn {self.current_turn_number}")
-
-                # for card in self.player_2.cards:
-                #     plot_image(card.layout, f"{self.player_2.name} card at turn {self.current_turn_number}")
             self.game_state.next_turn()
         
         

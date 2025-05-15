@@ -49,11 +49,11 @@ class Card:
             - no bit of configuration falls on a region where the mask is false
         
         """
-        # check no bit of piece outside the mask
+        # check config within the mask
         result = self.layout + configuration
         out_sum = np.sum(result[~self.mask])     # should sum to zero
         
-        # check that no bit of piece added to an already occupied piece
+        # check no overlap with already placed piece
         double_occupation = np.any(result > 1)
         
         return out_sum == 0 and not double_occupation

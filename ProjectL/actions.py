@@ -40,7 +40,7 @@ class TakePiece(Action):
         self.desc = "Take a Piece"
         
     def perform_action(self):
-        """ selects a possible piece and returns it
+        """ selects an available piece and returns it
         """
         
         # choose a piece, for now only Square pieces
@@ -48,7 +48,7 @@ class TakePiece(Action):
         self.pieces.append(piece)
 
     def is_action_valid(self):
-        """ checks if we can take a piece. This action is always valid we return True all the time
+        """ This action is always valid we return True all the time
             :return: True
         """
         return True
@@ -62,11 +62,6 @@ class PlacePiece(Action):
 
     def perform_action(self, configuration=None):
         """
-            * calls self.card.placement_valid() to check if the placement if OK
-            * updates self.card with new piece placement if it is
-            :return: True if placement performed, False otherwise 
-            
-            If configuration is None, then a random configuratin will be choosent at random within Piece.cube
             
         """
         if configuration is None:
@@ -79,15 +74,7 @@ class PlacePiece(Action):
             return False
     
     def is_action_valid(self):
-        """ Requirements:
-                * Card object 
-                * Piece object
-                * Configuration we want to place the piece into
-            :return: Bool
-            
-            Each object is responsible for checking that actions are valid. Thus the card will do that
-            when we get to card.placement_piece(). Here we check other validity critiria that may not be met.
-            I see none other in this case. Hence just return true.            
+        """ must have a piece and a card that is not full
         """
         if self.piece is None:
             # randomly select a piece to be placed as none provided

@@ -7,7 +7,7 @@ from game_objects import GameManager
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
 parent_dir = os.path.dirname(dir_path)                  # since configs are in project root
-file_path = os.path.join(parent_dir, 'test_configs.yaml')
+file_path = os.path.join(parent_dir, 'configs.yaml')
 
 def main():
     configs_dict = read_yaml(file_path)

@@ -9,7 +9,7 @@ class TestGameIntegration(unittest.TestCase):
         """Setup test game with specific config"""
         # Create a test config that's smaller but covers all mechanics
 
-        with open("tests/test_configs.yaml", 'r') as file:
+        with open("test_configs.yaml", 'r') as file:
             self.test_config = yaml.safe_load(file)
 
     def test_full_game_flow(self):

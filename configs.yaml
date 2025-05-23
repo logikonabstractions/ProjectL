@@ -1,7 +1,11 @@
 # Sample YAML file
 game_parameters:
   max_turns: 20
-
+logging:
+  mode: normal  # Options: normal, detailed, full_debug
+  log_dir: logs
+  max_file_size_mb: 5
+  backup_count: 3
 # we list here the definitions of all the pieces available in game, including their level etc.
 pieces:
   - name: square_1

@@ -4,10 +4,12 @@ This readme states/explains the context or purpose of the current branch. as thi
 
 ## current branch
 - this branch focuses on raven - evaluate 2 models
-- projectl_raven_0 as we are allowed to reuse for different prompt a given codebase
+- projectl_raven_0_model_sonnet for the sonnet answer
 
 ## coding notes
 - had to change the Dockerfile -- it wouldn't build with numpy in, seems to be lack of c compiler. So had to install those dependancies....
+- minor: the name of the logger should be defined in configs.yaml, so that different logger may be configured as the application grows
+- minor: The way the partial update for `GameManager` is presented for `game_objects.py` is somewhat ambiguous and should be clearer. The imports which are top of file in python are presented directly abovbe the `GameManager` class, but in reality the `GameState` class is between...
 
 ## prompt
 

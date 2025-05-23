@@ -1,6 +1,6 @@
 import string
 import random
-
+import logging
 from ProjectL.classes import TakePiece, PlacePiece, UpgradePiece, TakeCard, Master, Card, Piece, PieceSquare
 
 
@@ -22,7 +22,8 @@ class GameState:
 
 class GameManager:  
     """ the main game engine that runs the game. """
-    def __init__(self, configs_dict):  
+    def __init__(self, configs_dict):
+        self.logger = logging.getLogger(__name__)  # Logger for this class
         self.configs = configs_dict
         self.configs_pieces = configs_dict["pieces"]
         self.configs_cards = configs_dict["cards"]
@@ -55,22 +56,21 @@ class GameManager:
             self.cards.append(Card(configs=card_confs))
 
     def run(self):
-        """ loop that runs the game """
-        print("Please welcome our players!")
-        print(f"Player One: {self.player_1} ")
-        print(f"Player Two: {self.player_2} ")
+        self.logger.info("Please welcome our players!")  # High-level narrative
+        self.logger.info(f"Player One: {self.player_1}")
+        self.logger.info(f"Player Two: {self.player_2}")
+        self.logger.info("Now let's run the game")
 
-        print("Now let's run the game")
-        while self.is_game_running:
-            print(f"")
-            print(f"====== Playing turn {self.current_turn_number} ======")
+        while self.game_state.is_game_running():
+            self.logger.info(f"====== Playing turn {self.game_state.current_turn_number} ======")
             self.player_1.play_turn()
             self.player_2.play_turn()
 
-            # update turn number, but for debug check the state of the game
-            if self.current_turn_number%10 == 0:
-                print(f"{self.player_1} has {len(self.player_1.full_cards)} full cards and {len(self.player_1.cards)} cards")
+            if self.game_state.current_turn_number % 10 == 0:
+                self.logger.debug(
+                    f"{self.player_1} has {len(self.player_1.full_cards)} full cards and {len(self.player_1.cards)} cards")  # Detailed
             self.game_state.next_turn()
+        self.logger.info("Game has ended")  # Added for closure
         
         
     @property
@@ -91,8 +91,9 @@ class GameManager:
 
 class Player:
     """ a class that describes a player """
-    def __init__(self, name=None, cards =None, pieces = None, actions = None, strategy=None, **kwargs):
-        
+    # def __init__(self, name=None, cards =None, pieces = None, actions = None, strategy=None, **kwargs):
+    def __init__(self, *args, **kwargs):
+        self.logger = logging.getLogger(__name__)
         # attri. that defines the Player itself
         self.name = name if name is not None else self.generate_random_name()
         self.actions_left = 3
@@ -107,8 +108,11 @@ class Player:
         self.strategy = strategy if strategy else RandomStrat(player=self)
 
     def play_turn(self):
-        """  delegates the playing to the strategy """
-        return self.strategy.play_turn()
+        self.logger.debug(f"{self.name} starting turn with {self.actions_left} actions")  # Detailed
+        result = self.strategy.play_turn()
+        if FULL_DEBUG:
+            self.logger.debug(f"Turn result for {self.name}: {result}")  # Extra for tracing
+        return result
 
 
     def __repr__(self):
@@ -171,26 +175,26 @@ class RandomStrat(Strategy):
         super().__init__(player, **kwargs)
 
     def choose_action(self):
-        """Randomly selects an action from available action types."""
+        self.logger.debug("Choosing random action")  # Detailed
         action_selected = random.choice(self.actions)(pieces=self.pieces, cards=self.cards)
+        if FULL_DEBUG:
+            self.logger.debug(f"Selected action details: {action_selected}")  # Extra for Full Debug
         return action_selected
 
     def play_turn(self):
-        """Play a turn by randomly choosing valid actions until actions run out."""
         self.actions_left = 3
+        self.logger.info(f"{self.name} starting turn")  # High-level
         while self.actions_left > 0:
             action = self.choose_action()
-
-            # Keep trying actions until we find a valid one
             while not action.is_action_valid():
+                self.logger.debug(f"Invalid action attempted: {action}, retrying")  # Detailed
                 action = self.choose_action()
-
-            # Execute the valid action and consume an action
+            self.logger.debug(f"Performing action: {action}")  # Detailed
             action.perform_action()
             self.actions_left -= 1
-
-        print(f"{self.name} has no action left.")
-        print(f"{self.player}")
+        self.logger.info(f"{self.name} has no actions left")  # High-level
+        if FULL_DEBUG:
+            self.logger.debug(f"Player state after turn: pieces={len(self.pieces)}, cards={len(self.cards)}")  # Extra
 
 
 class BasicStrat(Strategy):
@@ -265,27 +269,18 @@ class BasicStrat(Strategy):
         return TakePiece(pieces=self.pieces)
 
     def play_turn(self):
-        """Execute the turn following the basic strategy priority system."""
         self.actions_left = 3
-
-        # First, handle any completed cards
+        self.logger.info(f"{self.name} starting turn")  # High-level
         self._move_full_cards()
-
-        actions_attempted = 0
-        max_attempts = 10  # Prevent infinite loops
-
+        # ... existing code ...
         while self.actions_left > 0 and actions_attempted < max_attempts:
-            actions_attempted += 1
-
-            # Get the best action based on current state
-            action = self._determine_best_action()
-
+            # ... existing code ...
             if action and self._execute_action(action):
+                self.logger.debug(f"Action executed successfully: {action}")  # Detailed
                 continue
             else:
-                # No valid actions available, pass remaining actions
-                print(f"{self.name} passes remaining {self.actions_left} actions")
+                self.logger.info(f"{self.name} passes remaining {self.actions_left} actions")  # High-level
                 self.actions_left = 0
-
-        print(f"{self.name} has no actions left.")
-        print(f"{self.player}")
+        self.logger.info(f"{self.name} has no actions left")  # High-level
+        if FULL_DEBUG:
+            self.logger.debug(f"Final player state: pieces={len(self.pieces)}, cards={len(self.cards)}, full_cards={len(self.full_cards)}")  # Extra

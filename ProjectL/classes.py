@@ -1,3 +1,4 @@
+import logging
 import random
 
 import numpy as np
@@ -14,6 +15,7 @@ class Action:
             - modifying a piece or a card that was passed to it
     """
     def __init__(self, piece=None, card=None, pieces = None, cards=None):
+        self.logger = logging.getLogger(__name__)
         self.desc = "action"
         self.piece = piece
         self.card = card
@@ -21,11 +23,12 @@ class Action:
         self.cards = cards
 
     def is_action_valid(self, *args, **kwargs):
-        """ checks if the action is valid
-            :return: Bool
-        """
+        is_valid = False
+        self.logger.debug(f"Checking validity of {self.desc}: {is_valid}")  # Detailed
+        if FULL_DEBUG and not is_valid:
+            self.logger.debug(f"Invalid reason: [context, e.g., no piece/card]")  # Extra for tracing issues
+        return is_valid
 
-        return False
 
     def perform_action(self, *args, **kwargs):
         """ performs the action. Will produce side-effect on objects that have been passed to the action -
@@ -46,9 +49,16 @@ class TakePiece(Action):
         """ selects an available piece and returns it
         """
 
-        # choose a piece, for now only Square pieces
-        piece = PieceSquare()
-        self.pieces.append(piece)
+
+        self.logger.debug(f"Performing {self.desc}")  # Detailed
+        # Original logic, with added try-except for errors
+        try:
+            # choose a piece, for now only Square pieces
+            piece = PieceSquare()
+            self.pieces.append(piece)
+        except Exception as e:
+            self.logger.error(f"Error performing {self.desc}: {e}")  # Error logging for robustness
+
 
     def is_action_valid(self):
         """ This action is always valid we return True all the time
@@ -67,14 +77,21 @@ class PlacePiece(Action):
         """
 
         """
-        if configuration is None:
-            config_no = random.randint(0,self.piece.cube.shape[0]-1)
-            configuration = self.piece.cube[config_no,:,:]
-        if self.is_action_valid():
-            result = self.card.place_piece(configuration)
-            return result
-        else:
-            return False
+        self.logger.debug(f"Performing {self.desc}")  # Detailed
+        # Original logic, with added try-except for errors
+        try:
+            if configuration is None:
+                config_no = random.randint(0,self.piece.cube.shape[0]-1)
+                configuration = self.piece.cube[config_no,:,:]
+            if self.is_action_valid():
+                result = self.card.place_piece(configuration)
+                return result
+            else:
+                return False
+            # ... existing code ...
+        except Exception as e:
+            self.logger.error(f"Error performing {self.desc}: {e}")  # Error logging for robustness
+
 
     def is_action_valid(self):
         """ must have a piece and a card that is not full

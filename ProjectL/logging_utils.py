@@ -46,6 +46,7 @@ def setup_logging(config):
     log_config = config.get("logging", {})
     log_mode = log_config.get("mode", "normal").lower()
     log_dir = log_config.get("log_dir", "logs")
+    log_name = log_config.get("logger_name", "projectL")
     max_file_size_mb = log_config.get("max_file_size_mb", 5)
     backup_count = log_config.get("backup_count", 3)
 
@@ -106,7 +107,7 @@ def setup_logging(config):
     root_logger.addHandler(console_handler)
 
     # Create a game logger that will be used throughout the application
-    game_logger = logging.getLogger('projectL')
+    game_logger = logging.getLogger(log_name)
 
     # Log startup information
     game_logger.info("Logging initialized in %s mode", log_mode, extra={"normal": True})

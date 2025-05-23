@@ -15,18 +15,20 @@ class GameState:
     def next_turn(self):
         """ """
         self.current_turn_number += 1
-        self.logger.debug("Advanced to turn %d/%d",
-                          self.current_turn_number, self.max_turns,
+        self.logger.debug(f"{self}",
                           extra={"normal": False})
 
     def is_game_running(self):
         """ checks if the game is running or over"""
         is_running = self.current_turn_number <= self.max_turns
         if not is_running:
-            self.logger.info("Game over: reached maximum turns (%d)",
-                             self.max_turns,
+            self.logger.info(f"Game over: reached maximum turns {self.max_turns}",
                              extra={"normal": True})
         return is_running
+
+    def __repr__(self):
+        return f"Game progress: {self.current_turn_number}/{self.max_turns}"
+
 class GameManager:
     """ the main game engine that runs the game. """
 
@@ -34,10 +36,10 @@ class GameManager:
         self.configs = configs_dict
         self.configs_pieces = configs_dict["pieces"]
         self.configs_cards = configs_dict["cards"]
-        self.game_state = GameState(current_turn_number=1, max_turns=configs_dict["game_parameters"]["max_turns"])
+        self.logger = logger or logging.getLogger('projectL')
+        self.game_state = GameState(current_turn_number=1, max_turns=configs_dict["game_parameters"]["max_turns"], logger=self.logger)
 
         # Set up logger
-        self.logger = logger or logging.getLogger('projectL')
 
         self.pieces = []
         self.actions = [TakePiece, PlacePiece, TakeCard]
@@ -61,36 +63,33 @@ class GameManager:
         """
         self.logger.debug("Creating game pieces", extra={"normal": False})
         for piece_confs in self.configs_pieces:
-            self.pieces.append(Piece(configs=piece_confs))
-            self.logger.debug("Created piece: %s", piece_confs["name"], extra={"normal": False, "verbose": True})
+            p = Piece(configs=piece_confs)
+            self.pieces.append(p)
+            self.logger.debug(f"Created piece: {p}", extra={"normal": False, "verbose": True})
 
         for card_confs in self.configs_cards:
-            self.cards.append(Card(configs=card_confs))
-            self.logger.debug("Created card with reward points: %s", card_confs["reward"]["points"],
+            card = Card(configs=card_confs)
+            self.cards.append(card)
+            self.logger.debug(f"Created card: {card}",
                               extra={"normal": False, "verbose": True})
 
     def run(self):
         """ loop that runs the game """
-        self.logger.info("Game started with players: %s and %s",
-                         self.player_1.name, self.player_2.name,
-                         extra={"normal": True})
+        self.logger.info(f"Game started with players: {self.player_1}, {self.player_2}", extra={"normal": True})
 
         while self.is_game_running:
-            self.logger.info("====== Playing turn %d ======", self.current_turn_number, extra={"normal": True})
+            self.logger.info(f"====== Playing turn {self.current_turn_number}======",  extra={"normal": True})
 
-            self.logger.debug("%s's turn", self.player_1.name, extra={"normal": False})
+            self.logger.debug(f"{self.player_1.name}'s turn",  extra={"normal": False})
             self.player_1.play_turn()
 
-            self.logger.debug("%s's turn", self.player_2.name, extra={"normal": False})
+            self.logger.debug(f"{self.player_2.name}'s turn", extra={"normal": False})
             self.player_2.play_turn()
 
             # update turn number, but for debug check the state of the game
             if self.current_turn_number % 10 == 0:
-                self.logger.info("%s has %d full cards and %d cards",
-                                 self.player_1.name,
-                                 len(self.player_1.full_cards),
-                                 len(self.player_1.cards),
-                                 extra={"normal": True})
+                self.logger.info(f"Player state: {self.player_1}", extra={"normal": True})
+                self.logger.info(f"Player state: {self.player_2}", extra={"normal": True})
             self.game_state.next_turn()
 
         self.logger.info("Game ended after %d turns", self.current_turn_number - 1, extra={"normal": True})
@@ -134,7 +133,7 @@ class Player:
 
     def play_turn(self):
         """  delegates the playing to the strategy """
-        self.logger.debug("%s is playing their turn", self.name, extra={"normal": False})
+        self.logger.debug(f"{self.name} is playing their turn",  extra={"normal": False})
         return self.strategy.play_turn()
 
     def __repr__(self):
@@ -146,15 +145,15 @@ class Player:
         chars = string.ascii_lowercase
         # Generate a random name of specified length
         name = ''.join(random.choice(chars) for _ in range(length))
-        self.logger.debug("Generated random name: %s", name, extra={"normal": False, "verbose": True})
+        self.logger.debug(f"Generated random name: {self.name}", extra={"normal": False, "verbose": True})
         return name
 
     def get_initial_pieces(self):
-        self.logger.debug("Getting initial pieces for %s", self.name, extra={"normal": False, "verbose": True})
+        self.logger.debug(f"Getting initial pieces for {self.name}", extra={"normal": False, "verbose": True})
         return [PieceSquare()]
 
     def set_strategy(self, strategy):
-        self.logger.debug("Setting strategy for %s", self.name, extra={"normal": False})
+        self.logger.debug(f"Setting strategy for {self.name}",  extra={"normal": False})
         self.strategy = strategy
         self.strategy.player = self
         if hasattr(strategy, 'logger'):
@@ -206,16 +205,14 @@ class RandomStrat(Strategy):
         """Randomly selects an action from available action types."""
         action_class = random.choice(self.actions)
         action_selected = action_class(pieces=self.pieces, cards=self.cards)
-        self.logger.debug("%s randomly selected action: %s",
-                          self.name, action_selected.desc,
+        self.logger.debug(f"{self.name} randomly selected action: {action_selected}",
                           extra={"normal": False, "verbose": True})
         return action_selected
 
     def play_turn(self):
         """Play a turn by randomly choosing valid actions until actions run out."""
         self.actions_left = 3
-        self.logger.debug("%s starting turn with %d actions (RandomStrat)",
-                          self.name, self.actions_left,
+        self.logger.debug(f"{self.name} starting turn with {self.actions_left} actions ",
                           extra={"normal": False})
 
         while self.actions_left > 0:
@@ -224,25 +221,21 @@ class RandomStrat(Strategy):
             # Keep trying actions until we find a valid one
             attempts = 0
             while not action.is_action_valid() and attempts < 10:
-                self.logger.debug("%s action invalid, trying another",
-                                  self.name,
+                self.logger.debug(f"{self.name} action invalid, trying another",
                                   extra={"normal": False, "verbose": True})
                 action = self.choose_action()
                 attempts += 1
 
             if attempts >= 10:
-                self.logger.debug("%s couldn't find valid action after 10 attempts",
-                                  self.name,
+                self.logger.debug(f"{self.name}  couldn't find valid action after 10 attempts",
                                   extra={"normal": False})
                 break
 
             # Execute the valid action and consume an action
-            self.logger.info("%s performs: %s", self.name, action.desc, extra={"normal": True})
+            self.logger.info(f"{self.name}  performs: {action}",  extra={"normal": True})
             action.perform_action()
             self.actions_left -= 1
-
-        self.logger.debug("%s has no actions left", self.name, extra={"normal": False})
-        self.logger.debug("Player state: %s", self.player, extra={"normal": False, "verbose": True})
+        self.logger.debug(f"Player state: {self.player}", extra={"normal": False, "verbose": True})
 
 class BasicStrat(Strategy):
     """Basic strategy with a simple priority system:
@@ -260,7 +253,7 @@ class BasicStrat(Strategy):
         """Move completed cards from active cards to full cards collection."""
         full_cards = [card for card in self.cards if card.is_full]
         if full_cards:
-            self.logger.info("%s completed %d cards", self.name, len(full_cards), extra={"normal": True})
+            self.logger.info(f"{self.name}  completed {len(self.player.full_cards)} cards", extra={"normal": True})
             self.full_cards.extend(full_cards)
             self.cards = [card for card in self.cards if not card.is_full]
 
@@ -271,12 +264,12 @@ class BasicStrat(Strategy):
             bool: True if action was executed successfully
         """
         if action.is_action_valid():
-            self.logger.info("%s performs: %s", self.name, action.desc, extra={"normal": True})
+            self.logger.info(f"{self.name}  performs: {action}", extra={"normal": True})
             action.perform_action()
             self.actions_left -= 1
             return True
         else:
-            self.logger.debug("%s action invalid: %s", self.name, action.desc, extra={"normal": False, "verbose": True})
+            self.logger.debug(f"{self.name}  action invalid: {action}", self.name, action.desc, extra={"normal": False, "verbose": True})
             return False
 
     def _try_place_piece(self):
@@ -286,22 +279,22 @@ class BasicStrat(Strategy):
             bool: True if placement was successful
         """
         if not (self.cards and self.pieces):
-            self.logger.debug("%s can't place piece - missing cards or pieces",
-                             self.name,
+            self.logger.debug(f"{self.name}  can't place piece - missing cards or pieces",
+
                              extra={"normal": False, "verbose": True})
             return False
 
         # Try to place a piece on the first available card
         piece = self.pieces.pop()
         action = PlacePiece(piece, self.cards[0], pieces=self.pieces)
-        self.logger.debug("%s attempting to place piece on card", self.name, extra={"normal": False})
+        self.logger.debug(f"{self.name} attempting to place piece on card",  extra={"normal": False})
 
         if self._execute_action(action):
             return True
         else:
             self.pieces.append(piece)  # put it back in the pack since the action failed
-            self.logger.debug("%s failed to place piece, returning to inventory",
-                             self.name,
+            self.logger.debug(f"{self.name} failed to place piece, returning to inventory",
+
                              extra={"normal": False, "verbose": True})
             return False
 
@@ -313,36 +306,31 @@ class BasicStrat(Strategy):
         """
         # Priority 1: Place a piece if we have both cards and pieces
         if self.cards and self.pieces:
-            self.logger.debug("%s strategy: place piece (has cards and pieces)",
-                             self.name,
+            self.logger.debug(f"{self.name}  strategy: place piece (has cards and pieces)",
                              extra={"normal": False})
             return PlacePiece(self.pieces[-1], self.cards[0], pieces=self.pieces)
 
         # Priority 2: Take a piece if we have no pieces
         if not self.pieces:
-            self.logger.debug("%s strategy: take piece (no pieces)",
-                             self.name,
+            self.logger.debug(f"{self.name} strategy: take piece (no pieces)",
                              extra={"normal": False})
             return TakePiece(pieces=self.pieces)
 
         # Priority 3: Take a card if we have no cards
         if not self.cards:
-            self.logger.debug("%s strategy: take card (no cards)",
-                             self.name,
+            self.logger.debug(f"{self.name} strategy: take card (no cards)",
                              extra={"normal": False})
             return TakeCard(cards=self.cards)
 
         # Default: Take a piece (better than nothing)
-        self.logger.debug("%s strategy: default to take piece",
-                         self.name,
+        self.logger.debug(f"{self.name}  strategy: default to take piece",
                          extra={"normal": False})
         return TakePiece(pieces=self.pieces)
 
     def play_turn(self):
         """Execute the turn following the basic strategy priority system."""
         self.actions_left = 3
-        self.logger.debug("%s starting turn with %d actions (BasicStrat)",
-                         self.name, self.actions_left,
+        self.logger.debug(f"{self.player} plays turn (BasicStrat)",
                          extra={"normal": False})
 
         # First, handle any completed cards
@@ -361,10 +349,9 @@ class BasicStrat(Strategy):
                 continue
             else:
                 # No valid actions available, pass remaining actions
-                self.logger.info("%s passes remaining %d actions",
+                self.logger.info(f"{self.player.name} passes remaining %d actions",
                                self.name, self.actions_left,
                                extra={"normal": True})
                 self.actions_left = 0
 
-        self.logger.debug("%s has no actions left", self.name, extra={"normal": False})
-        self.logger.debug("Player state: %s", self.player, extra={"normal": False, "verbose": True})
+        self.logger.debug(f"Player state: {self.player}", extra={"normal": False, "verbose": True})

@@ -141,6 +141,8 @@ class Reward:
         self.points = points
         self.piece = piece if piece else PieceSquare()
 
+    def __repr__(self):
+        return f"Points: {self.points} with piece: {self.piece.name}"
 
 class Card:
     """ Describes the different cards we can play with.
@@ -191,6 +193,8 @@ class Card:
 
         return out_sum == 0 and not double_occupation
 
+    def __repr__(self):
+        return f"Mask: {self.mask}, full: {self.is_full}, reward: {self.reward}"
 
 class Piece:
     """describes a Piece that a Player can place on a Card"""
@@ -288,7 +292,7 @@ class Piece:
         # plot_image(summed_matrix, self.name)
 
     def __repr__(self):
-        return self.name
+        return f"{self.name} - lvl {self.level}"
 
 
 class PieceSquare(Piece):

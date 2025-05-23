@@ -1,7 +1,9 @@
+import os
 import matplotlib
 from matplotlib import pyplot as plt
-matplotlib.use('TkAgg')  # or 'Agg', 'Qt5Agg'
 
+if os.environ.get("HEADLESS", "").lower() in ("1", "true"):
+    matplotlib.use("Agg")
 
 def plot_image(array, title=""):
     """ matplotlib to represent each card"""

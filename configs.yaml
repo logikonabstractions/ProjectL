@@ -1,13 +1,7 @@
 # Sample YAML file
 game_parameters:
-  max_turns: 60
-#  actions:
-#    - "Take a piece"
-#    - "Upgrade a piece"
-#    - "Take a card"
-#    - "Master"
-#    - "Place a piece"
-      
+  max_turns: 20
+
 # we list here the definitions of all the pieces available in game, including their level etc.
 pieces:
   - name: square_1
@@ -22,15 +16,7 @@ pieces:
   - name: line_3
     level: 3
     shape: [[1, 0, 0, 0, 0], [1, 0, 0, 0, 0], [1, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0]]
-#  - name: line_4
-#    level: 4
-#    shape: [[1, 0, 0, 0, 0], [1, 0, 0, 0, 0], [1, 0, 0, 0, 0], [1, 0, 0, 0, 0], [0, 0, 0, 0, 0]]
-#  - name: l_4
-#    level: 4
-#    shape: [[1, 0, 0, 0, 0], [1, 0, 0, 0, 0], [1, 1, 0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0]]
-#  - name: T-shape
-#    level: 4
-#    shape: [[1, 0, 0, 0, 0], [1, 1, 0, 0, 0], [1, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0]]
+
   
 cards:
   - reward:

@@ -6,6 +6,9 @@ This readme states/explains the context or purpose of the current branch. as thi
 - this branch focuses on raven - evaluate 2 models
 - projectl_raven_0 as we are allowed to reuse for different prompt a given codebase
 
+## coding notes
+- had to change the Dockerfile -- it wouldn't build with numpy in, seems to be lack of c compiler. So had to install those dependancies....
+
 ## prompt
 
 You need to add proper logging functionalities for this code and ensure no print statement remain.  The objective is to have logging modes that are configurable from the config file.

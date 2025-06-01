@@ -46,9 +46,10 @@ class GameManager:
         self.cards = []
 
         # players        TODO: ugly, refactor & makes a more robust initialization
-        self.player_1 = Player(name=configs_dict["players"][0]["name"], actions=self.actions, logger=self.logger)
-        self.player_1.set_strategy(BasicStrat(player=None, logger=self.logger))
-        self.player_2 = Player(name=configs_dict["players"][1]["name"], actions=self.actions, logger=self.logger)
+        self.player_1 = Player(name=configs_dict["players"][0]["name"], actions=self.actions, logger=self.logger, game_manager=self)
+        self.player_1.set_strategy(BasicStrat(player=self.player_1, logger=self.logger))
+        self.player_2 = Player(name=configs_dict["players"][1]["name"], actions=self.actions, logger=self.logger, game_manager=self)
+        self.player_2.set_strategy(BasicStrat(player=self.player_2, logger=self.logger))
 
         self.game_init()
 
@@ -56,16 +57,19 @@ class GameManager:
         """ setup for the beginning of the game
         """
         self.logger.debug("Initializing game", extra={"normal": False})
-        self.instantiate_pieces()
+        self.instantiate_elements()
 
-    def instantiate_pieces(self):
+    def instantiate_elements(self):
         """
         """
         self.logger.debug("Creating game pieces", extra={"normal": False})
+        self.pieces = []
         for piece_confs in self.configs_pieces:
-            p = Piece(configs=piece_confs)
-            self.pieces.append(p)
-            self.logger.debug(f"Created piece: {p}", extra={"normal": False, "verbose": True})
+            quantity = piece_confs.get("quantity", 1)
+            for _ in range(quantity):
+                p = Piece(configs=piece_confs)
+                self.pieces.append(p)
+            self.logger.debug(f"Created {quantity} pieces of type: {piece_confs['name']}", extra={"normal": False, "verbose": True})
 
         for card_confs in self.configs_cards:
             card = Card(configs=card_confs)
@@ -112,13 +116,14 @@ class GameManager:
 class Player:
     """ a class that describes a player """
 
-    def __init__(self, name=None, cards=None, pieces=None, actions=None, strategy=None, logger=None, **kwargs):
+    def __init__(self, name=None, cards=None, pieces=None, actions=None, strategy=None, logger=None, game_manager=None, **kwargs):
         # Set up logger
         self.logger = logger or logging.getLogger('projectL')
 
         # attri. that defines the Player itself
         self.name = name if name is not None else self.generate_random_name()
         self.actions_left = 3
+        self.game_manager = game_manager
 
         # list of objects, game stuff
         self.cards = cards if cards else []
@@ -204,7 +209,7 @@ class RandomStrat(Strategy):
     def choose_action(self):
         """Randomly selects an action from available action types."""
         action_class = random.choice(self.actions)
-        action_selected = action_class(pieces=self.pieces, cards=self.cards)
+        action_selected = action_class(pieces=self.pieces, cards=self.cards, game_manager=self.player.game_manager)
         self.logger.debug(f"{self.name} randomly selected action: {action_selected}",
                           extra={"normal": False, "verbose": True})
         return action_selected
@@ -308,13 +313,13 @@ class BasicStrat(Strategy):
         if self.cards and self.pieces:
             self.logger.debug(f"{self.name}  strategy: place piece (has cards and pieces)",
                              extra={"normal": False})
-            return PlacePiece(self.pieces[-1], self.cards[0], pieces=self.pieces)
+            return PlacePiece(self.pieces[-1], self.cards[0], pieces=self.pieces, game_manager=self.player.game_manager)
 
         # Priority 2: Take a piece if we have no pieces
         if not self.pieces:
             self.logger.debug(f"{self.name} strategy: take piece (no pieces)",
                              extra={"normal": False})
-            return TakePiece(pieces=self.pieces)
+            return TakePiece(pieces=self.pieces, game_manager=self.player.game_manager)
 
         # Priority 3: Take a card if we have no cards
         if not self.cards:
@@ -325,7 +330,7 @@ class BasicStrat(Strategy):
         # Default: Take a piece (better than nothing)
         self.logger.debug(f"{self.name}  strategy: default to take piece",
                          extra={"normal": False})
-        return TakePiece(pieces=self.pieces)
+        return TakePiece(pieces=self.pieces, game_manager=self.player.game_manager)
 
     def play_turn(self):
         """Execute the turn following the basic strategy priority system."""

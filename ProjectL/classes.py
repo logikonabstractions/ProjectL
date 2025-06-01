@@ -13,12 +13,14 @@ class Action:
             - adding a piece to pieces or card to cards
             - modifying a piece or a card that was passed to it
     """
-    def __init__(self, piece=None, card=None, pieces = None, cards=None):
+    def __init__(self, piece=None, card=None, pieces = None, cards=None, game_manager=None):
         self.desc = "action"
         self.piece = piece
         self.card = card
         self.pieces = pieces
         self.cards = cards
+        self.game_manager = game_manager
+
 
     def is_action_valid(self, *args, **kwargs):
         """ checks if the action is valid
@@ -45,16 +47,18 @@ class TakePiece(Action):
     def perform_action(self):
         """ selects an available piece and returns it
         """
-
-        # choose a piece, for now only Square pieces
-        piece = PieceSquare()
-        self.pieces.append(piece)
+        if self.game_manager and self.game_manager.pieces:
+            piece = self.game_manager.pieces.pop(0)
+            self.pieces.append(piece)
+            return True
+        return False
 
     def is_action_valid(self):
         """ This action is always valid we return True all the time
             :return: True
         """
-        return True
+        return self.game_manager and bool(self.game_manager.pieces)
+
 
 
 class PlacePiece(Action):

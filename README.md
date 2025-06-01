@@ -3,10 +3,15 @@
 This readme states/explains the context or purpose of the current branch. as this projects does branch off a lot and branches may be unrelated to the main project (e.g. da).
 
 ## current branch
-- evaluate two models (etw)
-- basis for prompt #2 of this project
-
+- evaluate two models (etw): DA model answer
+- 
 ## coding notes
+- unwanted modification: no mention of CARDS was made, yet the model just included finite quantities for those as well.
+- game_manager is an optional argument for `class Action`, yet is it is essential to running the code. It should be a mandatory argument.
+- The implementation for TakePiece doesn't allow choosing a specific piece. While it was not a requirement, simply assuming all pieces are equal isn't a wise implementation choice.
+- I did not implement the changes for TakeCard since this wasn't demanded in the prompt and is flagged as instruction following issue. Hence no need to test that.
+- Model added a BasicStrategy to player 2 even though this wasn't mentioned in the prompt. It also failed to highlight it made that change in its comments.
+- model passed the player at the instantiation of the strategy, even though the method `self.player.set_strategy(....)` is meant exactly for that. 
 
 
 ## prompt

@@ -16,7 +16,7 @@ class TestGameIntegration(unittest.TestCase):
         """Test a complete game flow from start to finish"""
         # Initialize game
         game_manager = GameManager(self.test_config)
-        
+
         # Validate initial game state
         self.assertEqual(game_manager.game_state.current_turn_number, 1)
         self.assertEqual(game_manager.game_state.max_turns, 10)

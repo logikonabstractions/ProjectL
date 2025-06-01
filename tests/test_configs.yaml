@@ -6,9 +6,11 @@ game_parameters:
 pieces:
   - name: square_1
     level: 1
+    quantity: 3
     shape: [[1, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0]]
   - name: line_2
     level: 2
+    quantity: 3
     shape: [ [ 1, 0, 0, 0, 0 ], [ 1, 0, 0, 0, 0 ], [ 0, 0, 0, 0, 0 ], [ 0, 0, 0, 0, 0 ], [ 0, 0, 0, 0, 0 ] ]
 
 cards:

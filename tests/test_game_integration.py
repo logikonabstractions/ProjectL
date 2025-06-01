@@ -1,7 +1,7 @@
 import unittest
 import os
 import yaml
-from ProjectL.game_objects import GameManager, Player, RandomStrat, BasicStrat
+from ProjectL.game_objects import GameManager, Player, RandomStrat, BasicStrat, TakePieceStrat
 
 
 class TestGameIntegration(unittest.TestCase):
@@ -27,11 +27,13 @@ class TestGameIntegration(unittest.TestCase):
         
         # Set strategies for predictable testing
         game_manager.player_1.set_strategy(BasicStrat(player=None))
-        game_manager.player_2.set_strategy(BasicStrat(player=None))
+        game_manager.player_2.set_strategy(TakePieceStrat(player=None))
         
         # Validate initial piece setup
-        self.assertTrue(len(game_manager.pieces) >= 2)  # At least our 2 configured pieces
-        
+        # for every piece type in the configs, we have the right quantities
+        for piece_conf in self.test_config["pieces"]:
+            self.assertEqual(len(game_manager.piece_bank[piece_conf["name"]]), piece_conf["quantity"])
+
         # Run the game
         game_manager.run()
         
@@ -51,6 +53,7 @@ class TestGameIntegration(unittest.TestCase):
         # Validate that game ended at or before max turns
         self.assertLessEqual(game_manager.game_state.current_turn_number, 
                            game_manager.game_state.max_turns + 1)  # +1 because turn is incremented after max
-        
+        #
+
 if __name__ == '__main__':
     unittest.main()

@@ -1,8 +1,8 @@
 # Sample YAML file
 game_parameters:
-  max_turns: 2
+  max_turns: 50
 logging:
-  mode: normal  # Options: normal, detailed, full_debug
+  mode: full_debug  # Options: normal, detailed, full_debug
   log_dir: logs
   max_file_size_mb: 5
   backup_count: 3

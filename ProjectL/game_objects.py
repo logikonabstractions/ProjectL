@@ -139,6 +139,7 @@ class Player:
     def play_turn(self):
         """  delegates the playing to the strategy """
         self.logger.debug(f"{self.name} is playing their turn",  extra={"normal": False})
+        self.logger.debug(f"Pieces in the bank: {len(self.game_manager.pieces)}",  extra={"normal": False})
         return self.strategy.play_turn()
 
     def __repr__(self):

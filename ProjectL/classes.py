@@ -38,22 +38,34 @@ class Action:
 
 
 class TakePiece(Action):
-    def __init__(self, piece=None, card=None, pieces = None, **kwargs):
+    def __init__(self, piece=None, card=None, pieces = None, game_manager=None,**kwargs):
         super().__init__(piece, card, pieces, **kwargs)
         self.desc = "Take a Piece"
+        self.game_manager = game_manager
 
-    def perform_action(self):
-        """ selects an available piece and returns it
+    def perform_action(self, piece_name=None):
+        """ selects an available piece from the bank and adds it to the player's pieces
         """
-
-        # choose a piece, for now only Square pieces
-        piece = PieceSquare()
-        self.pieces.append(piece)
+        if self.game_manager:
+            # Get a piece from the bank
+            piece = self.game_manager.get_piece_from_bank(piece_name)
+            if piece:
+                self.pieces.append(piece)
+                return True
+        else:
+            # Fallback to the original behavior for backward compatibility
+            piece = PieceSquare()
+            self.pieces.append(piece)
+            return True
+        return False
 
     def is_action_valid(self):
-        """ This action is always valid we return True all the time
-            :return: True
+        """ This action is valid if there are pieces available in the bank
         """
+        if self.game_manager:
+            # Check if any pieces are available in the bank
+            return any(pieces for pieces in self.game_manager.piece_bank.values())
+        # Fallback to original behavior
         return True
 
 

@@ -27,7 +27,7 @@ class TestGameIntegration(unittest.TestCase):
         
         # Set strategies for predictable testing
         game_manager.player_1.set_strategy(BasicStrat(player=None))
-        game_manager.player_2.set_strategy(BasicStrat(player=None))
+        game_manager.player_2.set_strategy(RandomStrat(player=None))
         
         # Validate initial piece setup
         self.assertTrue(len(game_manager.pieces) >= 2)  # At least our 2 configured pieces

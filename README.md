@@ -9,14 +9,12 @@ Starting point for this task.
 
 
 ## coding notes
-- the response uses the actual project configs (/ProjectL/configs.yaml) instead of tests configs under /tests
-- paths are hardcoded to local /tmp/... stuff instead of being relative and thus need to be edited to actually be used
-- The logic is very poor with regards to the acceptable layouts. There are 64 valid layouts for the corners_3 piece specified within a 5x5 grid. 
-- The model is right in saying the current implementation does not add rotation layouts when it generates its cube. However, hardcoding the translation-only test isn't the best answer
-- Many tests are duplicated or redundant: the model checks multiple times the size of the cube
-- The model re-wrote a suite to run all tests. It would be better to use unittest's built-in discovery features for this, rather than add another structure to maintain.
-- unittest.makeSuite is deprec in python 3.13, thus had to re-write to use the unittest.TestLoader().loadTestsFromTestCase(...) instead.
-
+- sourcing the test configs from a dedicated tests/test_configs_cubes.yaml instead of the production configs.yaml
+- added the solutions to the tests for difference pieces configuration, so we can validate code outputs against known expected value that we can update from the test configs (instead of having to edit the test suite itself)
+  - this is under the "solution" key for each piece configuration in test_configs_cubes.yaml
+- remove irrelevant tests ("test_cube_boundary_conditions" for example)
+- improved inefficient tests, which I replaced with "test_validate_cube_configurations_sum". The sum of position at each (x,y) position along the z axis (axis 0) leaves a specific trace for each cube, given a specific piece
+- remove redundant tests given above improvements (test_generate_cube_produces_all_valid_layouts, test_each_slice_contains_valid_layout)
 
 ## prompt
 I want to test the configuration & layout aspects of this project. More specifically, I need to ensure that the method `Piece.generate_cube()` works as intended in generating valid configurations. I want you to add unit tests to validate this. Use the piece `corner_3` from the configs to test this. The generated cube outputted should meet the following criteria:

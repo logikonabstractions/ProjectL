@@ -240,7 +240,6 @@ class Piece:
         # New: Extract the minimal shape (trim surrounding zeros) for easier rotation and placement
         minimal_shape = self.get_minimal_shape(self.shape)
 
-        # New: Generate all 4 possible rotations of the minimal shape
         rotations = [
             minimal_shape,  # 0° (original)
             np.rot90(minimal_shape, 1),  # 90°
@@ -251,22 +250,17 @@ class Piece:
         # New: For each rotation, generate all valid translated positions within 5x5
         configurations_arrays = []
         for rotated_shape in rotations:
-            configs = self.generate_configurations(rotated_shape)
-            configurations_arrays.extend(configs)
+            configurations_arrays.extend(self.generate_configurations(rotated_shape))
+        unique_configs = self.remove_duplicates(configurations_arrays)
+        self.cube = np.stack(unique_configs, axis=0)
 
-        # Existing: Remove duplicates by comparing byte representations
+    def remove_duplicates(self, configurations_arrays):
+        """ ensures we have no duplicates in the configurations """
         unique_configs = []
         for config in configurations_arrays:
             if not any(np.array_equal(config, existing) for existing in unique_configs):
                 unique_configs.append(config)
-
-        self.configurations_array = unique_configs
-
-        # Existing: Stack into a cube if there are valid configurations
-        if unique_configs:
-            self.cube = np.stack(unique_configs, axis=0)
-        else:
-            self.cube = np.array([])  # Empty if no valid configs (edge case)
+        return unique_configs
 
     # New helper method: Extracts the minimal bounding box of the shape (removes outer zeros)
     def get_minimal_shape(self, array):

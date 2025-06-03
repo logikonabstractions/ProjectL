@@ -2,7 +2,6 @@ import unittest
 import sys
 import os
 
-# Add the project root directory to path to allow imports
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from test_piece import TestPiece
@@ -19,7 +18,7 @@ if __name__ == '__main__':
     suite.addTest(unittest.TestLoader().loadTestsFromTestCase(TestGameIntegration))
 
     # Run the tests
-    runner = unittest.TextTestRunner(verbosity=2)
+    runner = unittest.TextTestRunner(verbosity=2, stream=sys.stdout)
     result = runner.run(suite)
 
     # Exit with appropriate exit code

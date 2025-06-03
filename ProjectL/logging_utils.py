@@ -78,8 +78,15 @@ def setup_logging(config):
         backupCount=backup_count
     )
 
-    # Console handler
-    console_handler = logging.StreamHandler(sys.stdout)
+    class UnbufferedStreamHandler(logging.StreamHandler):
+        def emit(self, record):
+            super().emit(record)
+            self.flush()
+
+    console_handler = UnbufferedStreamHandler(sys.stdout)
+
+    # # Console handler
+    # console_handler = logging.StreamHandler(sys.stdout)
 
     # Configure based on mode
     if log_mode == "full_debug":

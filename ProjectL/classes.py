@@ -237,63 +237,68 @@ class Piece:
             4 - all possible translations AND rotations possible must be represented by 1 slice along axis 0
             5 - there must be no duplicated layouts
         """
-        configurations_arrays = [self.shape]  # what we're trying to generate here; all the translations/rotations of tat piece on a card
-        unprocessed_arrays = [self.shape]  # need to roll all of those
-        generated_configurations = []  # new ones, just to avoid modifying a list we're iterating on (unprocessed_arrays). adding new arrays here
+        # New: Extract the minimal shape (trim surrounding zeros) for easier rotation and placement
+        minimal_shape = self.get_minimal_shape(self.shape)
 
-        while len(generated_configurations) + len(unprocessed_arrays) > 0:
-            generated_configurations = self.processe_arrays(unprocessed_arrays)
-            to_remove = []
+        # New: Generate all 4 possible rotations of the minimal shape
+        rotations = [
+            minimal_shape,  # 0° (original)
+            np.rot90(minimal_shape, 1),  # 90°
+            np.rot90(minimal_shape, 2),  # 180°
+            np.rot90(minimal_shape, 3)  # 270°
+        ]
 
-            # identify any duplication in generated_configurations
-            for idx, new_arr in enumerate(generated_configurations):
-                if any([arr.tobytes() == new_arr.tobytes() for arr in configurations_arrays]):  # duplicate matrice
-                    to_remove.append(idx)
+        # New: For each rotation, generate all valid translated positions within 5x5
+        configurations_arrays = []
+        for rotated_shape in rotations:
+            configs = self.generate_configurations(rotated_shape)
+            configurations_arrays.extend(configs)
 
-            # remove them
-            for id in reversed(to_remove):
-                generated_configurations.pop(id)
+        # Existing: Remove duplicates by comparing byte representations
+        unique_configs = []
+        for config in configurations_arrays:
+            if not any(np.array_equal(config, existing) for existing in unique_configs):
+                unique_configs.append(config)
 
-            # anything left needs to be processed
-            unprocessed_arrays = generated_configurations
-            configurations_arrays += generated_configurations
-            self.configurations_array = configurations_arrays
+        self.configurations_array = unique_configs
 
-        # stacking all valid configurations generated into axis 0 so we get a cube
-        self.cube = np.stack(self.configurations_array, axis=0)
+        # Existing: Stack into a cube if there are valid configurations
+        if unique_configs:
+            self.cube = np.stack(unique_configs, axis=0)
+        else:
+            self.cube = np.array([])  # Empty if no valid configs (edge case)
 
-    def processe_arrays(self, unprocessed_arrays):
-        new_rolled_arrays = []
-        while unprocessed_arrays:
-            candidate_positions = self.generate_rolled_arrays(unprocessed_arrays.pop())
-            for candidate in candidate_positions:
-                if any([arr.tobytes() == candidate.tobytes() for arr in new_rolled_arrays]):    # duplicate matrice
-                    pass
-                else:
-                    new_rolled_arrays.append(candidate)
+    # New helper method: Extracts the minimal bounding box of the shape (removes outer zeros)
+    def get_minimal_shape(self, array):
+        """Extract the minimal bounding box of the non-zero elements in the array."""
+        rows = np.any(array, axis=1)
+        cols = np.any(array, axis=0)
+        if not np.any(rows) or not np.any(cols):
+            return np.array([])  # Empty shape
+        ymin, ymax = np.where(rows)[0][[0, -1]]
+        xmin, xmax = np.where(cols)[0][[0, -1]]
+        return array[ymin:ymax + 1, xmin:xmax + 1]
 
-        return new_rolled_arrays
+    # New helper method: Replaces generate_rolled_arrays and processe_arrays
+    # Generates all valid 5x5 configurations by placing the (rotated) minimal shape at every possible position
+    def generate_configurations(self, minimal_shape):
+        """For a given (rotated) minimal shape, generate all possible translations within a 5x5 grid."""
+        if minimal_shape.size == 0:
+            return []  # No configurations for empty shape
 
-    def generate_rolled_arrays(self, array):
-        """ from the give array, generate all rolled arrays that are valid for Project L from the given array
+        h, w = minimal_shape.shape
+        configurations = []
 
-            Translates the piece to the right (by rolling matrice indices). Checks that the resulting matrice is valid
-            for the game.
-        """
-        new_arrays = []
-        temp = array
-        # rolling the columns to the right
-        while np.sum(temp[:, -1]) == 0:
-            temp = np.roll(temp, 1, axis=1)
-            new_arrays.append(temp)
+        # Iterate over all possible top-left positions where the shape fits
+        for i in range(5 - h + 1):
+            for j in range(5 - w + 1):
+                # Create a 5x5 zero array and place the minimal shape at (i, j)
+                config = np.zeros((5, 5), dtype=int)
+                config[i:i + h, j:j + w] = minimal_shape
+                configurations.append(config)
 
-        # rolling the rows down = but need to re-initialize temp to array
-        temp = array
-        while np.sum(temp[-1, :]) == 0:
-            temp = np.roll(temp, 1, axis=0)
-            new_arrays.append(temp)
+        return configurations
 
-        return new_arrays
 
     def plot_configurations(self):
         """ for debug - plots the configurations for our piece """

@@ -228,12 +228,14 @@ class Piece:
 
 
     def generate_cube(self):
-        """ To be efficient in computation, we represent each Piece as a 3D matrix.
+        """ To be efficient in computation, we represent all the possible positions of a piece within a card as a 3D matrix.
 
-            The 3rd axis of the matrix represents all the possible configuration of the Piece.
-
-            They are laid onto a (i, j) matrice of the same dimension as the largest possible
-            dimension of a card.
+            The axis=0 of the matrix (numpy array) represents all the possible configuration of that Piece. This method is responsible for generating all that. A valid cube must:
+            1 - contain only layouts laying entirely within a card (5x5)
+            2 - contain only continuous piece position (cannot overflow or wrap around)
+            3 - only contain 0,1 values where 1 == a square occupied by the piecce and 0 == not occupied
+            4 - all possible translations AND rotations possible must be represented by 1 slice along axis 0
+            5 - there must be no duplicated layouts
         """
         configurations_arrays = [self.shape]  # what we're trying to generate here; all the translations/rotations of tat piece on a card
         unprocessed_arrays = [self.shape]  # need to roll all of those

@@ -237,30 +237,67 @@ class Piece:
             4 - all possible translations AND rotations possible must be represented by 1 slice along axis 0
             5 - there must be no duplicated layouts
         """
-        configurations_arrays = [self.shape]  # what we're trying to generate here; all the translations/rotations of tat piece on a card
-        unprocessed_arrays = [self.shape]  # need to roll all of those
-        generated_configurations = []  # new ones, just to avoid modifying a list we're iterating on (unprocessed_arrays). adding new arrays here
+        # First, generate all distinct rotations of the base shape
+        rotated_shapes = self.generate_rotations(self.shape)
 
-        while len(generated_configurations) + len(unprocessed_arrays) > 0:
-            generated_configurations = self.processe_arrays(unprocessed_arrays)
-            to_remove = []
+        configurations_arrays = []  # All configurations (translations of all rotations)
 
-            # identify any duplication in generated_configurations
-            for idx, new_arr in enumerate(generated_configurations):
-                if any([arr.tobytes() == new_arr.tobytes() for arr in configurations_arrays]):  # duplicate matrice
-                    to_remove.append(idx)
+        # Process each rotation
+        for rotated_shape in rotated_shapes:
+            # Start with the rotated shape
+            unprocessed_arrays = [rotated_shape]
+            rotation_configs = [rotated_shape]
 
-            # remove them
-            for id in reversed(to_remove):
-                generated_configurations.pop(id)
+            # Generate all translations for this rotation
+            while unprocessed_arrays:
+                generated_configurations = self.processe_arrays(unprocessed_arrays)
+                to_remove = []
 
-            # anything left needs to be processed
-            unprocessed_arrays = generated_configurations
-            configurations_arrays += generated_configurations
-            self.configurations_array = configurations_arrays
+                # identify any duplication in generated_configurations
+                for idx, new_arr in enumerate(generated_configurations):
+                    if any([arr.tobytes() == new_arr.tobytes() for arr in rotation_configs]):  # duplicate matrice
+                        to_remove.append(idx)
 
+                # remove them
+                for id in reversed(to_remove):
+                    generated_configurations.pop(id)
+
+                # anything left needs to be processed
+                unprocessed_arrays = generated_configurations
+                rotation_configs.extend(generated_configurations)
+
+            # Add all configurations for this rotation to the main list
+            configurations_arrays.extend(rotation_configs)
+
+        # Remove any duplicates across different rotations
+        unique_configurations = []
+        for config in configurations_arrays:
+            if not any([arr.tobytes() == config.tobytes() for arr in unique_configurations]):
+                unique_configurations.append(config)
+
+        self.configurations_array = unique_configurations
         # stacking all valid configurations generated into axis 0 so we get a cube
         self.cube = np.stack(self.configurations_array, axis=0)
+
+    def generate_rotations(self, shape):
+        """Generate all distinct rotations of the given shape.
+
+        Returns:
+            list: List of unique rotated arrays
+        """
+        rotations = [shape]  # Start with the original shape
+
+        # Generate 90, 180, and 270 degree rotations
+        current = shape
+        for _ in range(3):  # 3 more rotations to try
+            current = np.rot90(current)  # Rotate 90 degrees
+
+            # Check if this rotation is unique
+            if not any([np.array_equal(current, rot) for rot in rotations]):
+                rotations.append(current.copy())
+
+        return rotations
+
 
     def processe_arrays(self, unprocessed_arrays):
         new_rolled_arrays = []

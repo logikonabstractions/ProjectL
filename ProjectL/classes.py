@@ -2,7 +2,7 @@ import random
 
 import numpy as np
 
-from ProjectL.utils import plot_image
+from ProjectL.ProjectL.utils import plot_image
 
 
 class Action:
@@ -241,23 +241,24 @@ class Piece:
 
         while len(generated_configurations) + len(unprocessed_arrays) > 0:
             generated_configurations = self.processe_arrays(unprocessed_arrays)
-
-            # for idx, _ in enumerate(generated_configurations):
-            #     print(f"\nConfiguration:\n {_} idx: {idx}")
-
             to_remove = []
+
+            # identify any duplication in generated_configurations
             for idx, new_arr in enumerate(generated_configurations):
                 if any([arr.tobytes() == new_arr.tobytes() for arr in configurations_arrays]):  # duplicate matrice
                     to_remove.append(idx)
 
+            # remove them
             for id in reversed(to_remove):
                 generated_configurations.pop(id)
+
+            # anything left needs to be processed
             unprocessed_arrays = generated_configurations
             configurations_arrays += generated_configurations
             self.configurations_array = configurations_arrays
-        # self.plot_configurations()
+
+        # stacking all valid configurations generated into axis 0 so we get a cube
         self.cube = np.stack(self.configurations_array, axis=0)
-        # self.validate_cube()
 
     def processe_arrays(self, unprocessed_arrays):
         new_rolled_arrays = []
@@ -265,13 +266,10 @@ class Piece:
             candidate_positions = self.generate_rolled_arrays(unprocessed_arrays.pop())
             for candidate in candidate_positions:
                 if any([arr.tobytes() == candidate.tobytes() for arr in new_rolled_arrays]):    # duplicate matrice
-                    # plot_image(candidate, f"Candidate already in configurations")
                     pass
                 else:
                     new_rolled_arrays.append(candidate)
-            # print(f"New rolled arrays: {len(new_rolled_arrays)}")
-            # print(f"unprocessed_arrays : {len(unprocessed_arrays)}")
-            # print(f"Configurations: {len(self.configurations_array)}")
+
         return new_rolled_arrays
 
     def generate_rolled_arrays(self, array):

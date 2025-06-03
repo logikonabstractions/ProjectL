@@ -2,7 +2,7 @@ import random
 
 import numpy as np
 
-from ProjectL.ProjectL.utils import plot_image
+from ProjectL.utils.utils import plot_image
 
 
 class Action:

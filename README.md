@@ -9,7 +9,13 @@ Starting point for this task.
 
 
 ## coding notes
-
+- the response uses the actual project configs (/ProjectL/configs.yaml) instead of tests configs under /tests
+- paths are hardcoded to local /tmp/... stuff instead of being relative and thus need to be edited to actually be used
+- The logic is very poor with regards to the acceptable layouts. There are 64 valid layouts for the corners_3 piece specified within a 5x5 grid. 
+- The model is right in saying the current implementation does not add rotation layouts when it generates its cube. However, hardcoding the translation-only test isn't the best answer
+- Many tests are duplicated or redundant: the model checks multiple times the size of the cube
+- The model re-wrote a suite to run all tests. It would be better to use unittest's built-in discovery features for this, rather than add another structure to maintain.
+- unittest.makeSuite is deprec in python 3.13, thus had to re-write to use the unittest.TestLoader().loadTestsFromTestCase(...) instead.
 
 
 ## prompt

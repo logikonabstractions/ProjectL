@@ -13,7 +13,7 @@ from ProjectL.classes import Piece
 class TestPiece(unittest.TestCase):
     def setUp(self):
         """Set up test fixtures, loading the corner_3 piece config"""
-        with open("test_configs_cube.yaml", 'r') as file:
+        with open("tests/test_configs_cube.yaml", 'r') as file:
             self.configs = yaml.safe_load(file)
 
         # Get the corner_3 piece configuration

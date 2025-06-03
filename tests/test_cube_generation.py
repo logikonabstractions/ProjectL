@@ -14,7 +14,7 @@ from ProjectL.classes import Piece
 class TestCubeGeneration(unittest.TestCase):
     def setUp(self):
         """Load configuration for all pieces"""
-        with open("test_configs_cube.yaml", 'r') as file:
+        with open("tests/test_configs_cube.yaml", 'r') as file:
             self.configs = yaml.safe_load(file)
 
         self.all_pieces = self.configs["pieces"]

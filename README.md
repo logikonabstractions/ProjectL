@@ -12,3 +12,6 @@ This readme states/explains the context or purpose of the current branch. as thi
 
 ## prompt
 
+
+## Projet TODO
+- tests for the configuration/layout of pieces
